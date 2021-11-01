@@ -17,7 +17,7 @@ var spotifyApi = new SpotifyWebApi({
 	clientSecret: "ad53d6d1d8674a039a42d377c13ce92b",
 });
 spotifyApi.setAccessToken(
-	"BQAzxTKEnPK7dHgbTNaMn9-NoEeQJkiHd9PqfJJwcZsVMXmqgzeT8wCndq9a95lh_8iRXew4up6IhgsL0Nw"
+	"BQDC25LO_mGjePbd8G8K68sL9tVWFFxmPRJlm86-LXd9CF6Yk9y-t8iWg4bx1FYOboL2X8zlkX6lmKuiI00"
 );
 
 //Middleware
