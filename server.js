@@ -2,50 +2,25 @@
 const bodyParser = require("body-parser");
 const express = require("express");
 const cors = require("cors");
-const qs = require("qs");
-
-const axios = require("axios").default;
+const { initMongo } = require("./lib/initMongo");
+const { startJob } = require("./lib/autoToken");
+const { spotifyApi } = require("./lib/initSpotify");
 
 //Import Routes
+const users = require("./routes/users");
 
 //Initializations
 const app = express();
-
-const SpotifyWebApi = require("spotify-web-api-node");
-var spotifyApi = new SpotifyWebApi({
-	clientId: "26ebaacf752c4a468d8a137e4e7af8ac",
-	clientSecret: "ad53d6d1d8674a039a42d377c13ce92b",
-});
-spotifyApi.setAccessToken(
-	"BQDC25LO_mGjePbd8G8K68sL9tVWFFxmPRJlm86-LXd9CF6Yk9y-t8iWg4bx1FYOboL2X8zlkX6lmKuiI00"
-);
+initMongo();
+startJob();
 
 //Middleware
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cors({ origin: ["http://localhost:3000", "http://localhost:3001"] }));
 
 //Routes
-
-app.get("/getToken", async (req, res) => {
-	let client_id = "26ebaacf752c4a468d8a137e4e7af8ac";
-	let client_secret = "ad53d6d1d8674a039a42d377c13ce92b";
-
-	const response = await axios.post(
-		"https://accounts.spotify.com/api/token",
-		qs.stringify({ grant_type: "client_credentials" }),
-		{
-			headers: {
-				Accept: "application/json",
-				"Content-Type": "application/x-www-form-urlencoded",
-			},
-			auth: {
-				username: client_id,
-				password: client_secret,
-			},
-		}
-	);
-
-	res.json(response.data);
-});
+app.use("/users", users);
 
 app.get("/search", async (req, res) => {
 	let searchTerm = req.query.search;
