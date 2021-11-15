@@ -10,6 +10,7 @@ const { spotifyApi } = require("./lib/initSpotify");
 const users = require("./routes/users");
 
 //Initializations
+require("dotenv").config();
 const app = express();
 initMongo();
 startJob();
