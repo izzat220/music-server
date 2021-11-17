@@ -1,6 +1,7 @@
 const UserModel = require("../models/UserModel");
 const bcrypt = require("bcrypt");
 const moment = require("moment");
+const jwt = require("jsonwebtoken");
 
 //add User
 const addUser = async (req, res) => {
@@ -82,4 +83,63 @@ const getUser = async (req, res) => {
 //get users
 const getUsers = async (req, res) => {};
 
-module.exports = { addUser, getUser, getUsers, updateUser, deleteUser };
+const login = async (req, res) => {
+	console.log(req.body);
+	let email = req.body.email;
+	let password = req.body.password;
+
+	let user = await UserModel.findOne({ email });
+	if (!user) return res.status(403).json({ Error: "Account Not Found" });
+
+	let isMatch = await bcrypt.compare(password, user.password);
+	if (!isMatch) return res.status(403).json({ Error: "Not Authorized" });
+
+	let token = jwt.sign(
+		{ username: user.username, displayName: user.displayName },
+		"secret",
+		{ expiresIn: 604800 }
+	);
+
+	res.cookie("jwt", token, {
+		httpOnly: false,
+		secure: false,
+		maxAge: 604800 * 1000,
+	});
+	return res.status(200).json({ token });
+};
+
+const checkToken = async (req, res) => {
+	let token = req.cookies?.jwt;
+	console.log(req.cookies);
+	if (!token) return res.status(403).json({ error: "Unauthorized" });
+
+	jwt.verify(token, "secret", (err, decoded) => {
+		if (err) return res.status(403).json({ error: err });
+
+		let newPayload = {
+			username: decoded.username,
+			displayName: decoded.displayName,
+		};
+		let newToken = jwt.sign(newPayload, "secret", { expiresIn: 604800 });
+
+		res.cookie("jwt", newToken, {
+			httpOnly: false,
+			secure: false,
+			maxAge: 604800 * 1000,
+		});
+
+		return res
+			.status(200)
+			.json({ username: decoded.username, displayName: decoded.displayName });
+	});
+};
+
+module.exports = {
+	addUser,
+	getUser,
+	getUsers,
+	updateUser,
+	deleteUser,
+	login,
+	checkToken,
+};

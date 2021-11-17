@@ -5,6 +5,7 @@ const cors = require("cors");
 const { initMongo } = require("./lib/initMongo");
 const { startJob } = require("./lib/autoToken");
 const { spotifyApi } = require("./lib/initSpotify");
+const cookieParser = require("cookie-parser");
 
 //Import Routes
 const users = require("./routes/users");
@@ -18,7 +19,13 @@ startJob();
 //Middleware
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(cors({ origin: ["http://localhost:3000", "http://localhost:3001"] }));
+app.use(cookieParser("secret"));
+app.use(
+	cors({
+		credentials: true,
+		origin: ["http://localhost:3000", "http://localhost:3001"],
+	})
+);
 
 //Routes
 app.use("/users", users);
