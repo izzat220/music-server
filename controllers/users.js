@@ -40,15 +40,11 @@ const addUser = async (req, res) => {
 
 //update User
 const updateUser = async (req, res) => {
-	let userInfo = req.body;
+	let formData = req.body;
 
-	if (!userInfo.username)
-		return res.status(400).json({ error: "Username Not Provided" });
-
-	let user = await UserModel.findOneAndUpdate(
-		{ username: userInfo.username },
-		userInfo
-	).catch((err) => res.status(500).json({ error: err }));
+	await UserModel.findOneAndUpdate({ username: req.username }, formData).catch(
+		(err) => res.status(500).json({ error: err })
+	);
 
 	return res.status(200).json({ success: "User Updated" });
 };
@@ -84,7 +80,6 @@ const getUser = async (req, res) => {
 const getUsers = async (req, res) => {};
 
 const login = async (req, res) => {
-	console.log(req.body);
 	let email = req.body.email;
 	let password = req.body.password;
 
@@ -110,7 +105,6 @@ const login = async (req, res) => {
 
 const checkToken = async (req, res) => {
 	let token = req.cookies?.jwt;
-	console.log(req.cookies);
 	if (!token) return res.status(403).json({ error: "Unauthorized" });
 
 	jwt.verify(token, "secret", (err, decoded) => {

@@ -9,6 +9,7 @@ const cookieParser = require("cookie-parser");
 
 //Import Routes
 const users = require("./routes/users");
+const posts = require("./routes/posts");
 
 //Initializations
 require("dotenv").config();
@@ -29,6 +30,7 @@ app.use(
 
 //Routes
 app.use("/users", users);
+app.use("/posts", posts);
 
 app.get("/search", async (req, res) => {
 	let searchTerm = req.query.search;
