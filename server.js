@@ -10,6 +10,7 @@ const cookieParser = require("cookie-parser");
 //Import Routes
 const users = require("./routes/users");
 const posts = require("./routes/posts");
+const albums = require("./routes/albums");
 
 //Initializations
 require("dotenv").config();
@@ -31,6 +32,7 @@ app.use(
 //Routes
 app.use("/users", users);
 app.use("/posts", posts);
+app.use("/albums", albums);
 
 app.get("/search", async (req, res) => {
 	let searchTerm = req.query.search;
@@ -41,7 +43,13 @@ app.get("/search", async (req, res) => {
 	let artists = await spotifyApi.searchArtists(searchTerm);
 	artists = artists.body.artists.items;
 
-	return res.json({ albums, artists });
+	return res.status(200).json({ albums, artists });
+});
+
+app.get("/getAlbum", async (req, res) => {
+	let albumId = req.query.albumId;
+	let album = await spotifyApi.getAlbum(albumId);
+	return res.status(200).json(album.body);
 });
 
 //Listening
